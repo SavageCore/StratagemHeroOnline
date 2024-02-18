@@ -34,11 +34,11 @@ var currentStratagemsList = [];
 var lastCheckedTime = undefined;
 
 // Show directional buttons if user is on mobile
-if(userIsMobile())
+if (userIsMobile())
     showMobileButtons();
 
 // Load first stratagems
-for(let i = 0; i < CURRENT_STRATAGEM_LIST_LENGTH; i++){
+for (let i = 0; i < CURRENT_STRATAGEM_LIST_LENGTH; i++) {
     currentStratagemsList.push(pickRandomStratagem());
 }
 
@@ -50,10 +50,10 @@ countDown();
 
 //~~~//
 
-function keypress(keyCode){
+function keypress(keyCode) {
     // Ignore invalid keypresses
     let sfx;
-    switch(keyCode){
+    switch (keyCode) {
         case "KeyW":
         case "ArrowUp":
             sfx = sfxUp;
@@ -74,17 +74,17 @@ function keypress(keyCode){
             sfx = sfxRight;
             keyCode = "KeyD";
             break;
-        default: 
+        default:
             return;
     }
 
     //b
 
     //Route keypress to proper handling function
-    switch(gameState){
+    switch (gameState) {
         case "initial":
             gameState = "running";
-            // Exclusion of `break;` here is intentional. The first keypress of the game should apply to the sequence
+        // Exclusion of `break;` here is intentional. The first keypress of the game should apply to the sequence
         case "running":
             checkGameKeypress(keyCode, sfx);
             break;
@@ -96,14 +96,14 @@ function keypress(keyCode){
     }
 }
 
-function checkGameKeypress(keyCode, sfx){
+function checkGameKeypress(keyCode, sfx) {
     // Check the keypress against the current sequence
-    if(keyCode == currentArrowSequenceTags[currentSequenceIndex].code){
+    if (keyCode == currentArrowSequenceTags[currentSequenceIndex].code) {
         //Success, apply the success
         currentSequenceIndex++;
-        
-        //Check if that success completes the entire sequence. 
-        if(currentSequenceIndex == currentArrowSequenceTags.length){
+
+        //Check if that success completes the entire sequence.
+        if (currentSequenceIndex == currentArrowSequenceTags.length) {
             //Add time bonus and pause the countdown for the delay time
             timeRemaining += CORRECT_TIME_BONUS;
             gameState = "hitlag";
@@ -122,20 +122,20 @@ function checkGameKeypress(keyCode, sfx){
             }, NEW_STRATEGEM_TIMEOUT);
         }
     }
-    else if (keyCode == currentArrowSequenceTags[0].code){
+    else if (keyCode == currentArrowSequenceTags[0].code) {
         //Edge case; if they're wrong but their input is the same as the first code, reset to first.
         currentSequenceIndex = 1;
 
         //Play failure animation
         shakeArrows(FAILURE_SHAKE_TIME);
     }
-    else{
+    else {
         //Failure, reset progress
         currentSequenceIndex = 0;
 
         //Play failure animation
         shakeArrows(FAILURE_SHAKE_TIME);
-    }   
+    }
 
     updateArrowFilters(currentArrowSequenceTags, currentSequenceIndex);
 
@@ -143,14 +143,14 @@ function checkGameKeypress(keyCode, sfx){
     sfx.paused ? sfx.play() : sfx.currentTime = 0;
 }
 
-function checkRefreshKeypress(keyCode, sfx){
+function checkRefreshKeypress(keyCode, sfx) {
     // Check the keypress against the current sequence
-    if(keyCode == refreshArrowSequenceTags[currentRefreshIndex].code){
+    if (keyCode == refreshArrowSequenceTags[currentRefreshIndex].code) {
         //Success, apply the success
         currentRefreshIndex++;
-        
+
         //If that completes the entire sequence, reload the window after a short delay
-        if(currentRefreshIndex == refreshArrowSequenceTags.length){
+        if (currentRefreshIndex == refreshArrowSequenceTags.length) {
             setTimeout(() => {
                 window.location.reload()
             }, 300);
@@ -162,22 +162,22 @@ function checkRefreshKeypress(keyCode, sfx){
     sfx.paused ? sfx.play() : sfx.currentTime = 0;
 }
 
-function updateArrowFilters(arrowTags, index){
-    for(i = 0; i < arrowTags.length; i++){
+function updateArrowFilters(arrowTags, index) {
+    for (i = 0; i < arrowTags.length; i++) {
         arrowTags[i].setAttribute("class", i < index ? "arrow-complete-filter" : "arrow-incomplete-filter")
     }
 }
 
-function shakeArrows(time){
-    document.getElementById("arrows-container").setAttribute("style", `animation: shake ${time/1000}s;`);
+function shakeArrows(time) {
+    document.getElementById("arrows-container").setAttribute("style", `animation: shake ${time / 1000}s;`);
 
     setTimeout(() => {
         document.getElementById("arrows-container").removeAttribute("style");
     }, 200);
 }
 
-function refreshStratagemDisplay(){
-    for(let i in currentStratagemsList){
+function refreshStratagemDisplay() {
+    for (let i in currentStratagemsList) {
         // Show the stratagem's picture in the correct slot
         document.getElementById(`stratagem-icon-${i}`).src = `./Images/Stratagem\ Icons/${currentStratagemsList[i].image}`;
     }
@@ -189,12 +189,12 @@ function refreshStratagemDisplay(){
     document.getElementById("stratagem-name").innerHTML = currentStratagemsList[0].name;
 }
 
-function pickRandomStratagem(){
+function pickRandomStratagem() {
     return stratagems[Math.floor(Math.random() * stratagems.length)];
 }
 
-function showArrowSequence(arrowSequence, arrowsContainer){
-    if(arrowsContainer == undefined)
+function showArrowSequence(arrowSequence, arrowsContainer) {
+    if (arrowsContainer == undefined)
         arrowsContainer = document.getElementById("arrows-container");
 
     // Remove all table elements of old arrows
@@ -202,7 +202,7 @@ function showArrowSequence(arrowSequence, arrowsContainer){
 
     //Create new arrow elements
     let arrowTags = [];
-    for(arrow of arrowSequence){
+    for (arrow of arrowSequence) {
         let td = document.createElement("td");
         let img = document.createElement("img");
         td.appendChild(img);
@@ -210,19 +210,19 @@ function showArrowSequence(arrowSequence, arrowsContainer){
         img.setAttribute("class", `arrow-incomplete-filter`);
 
         // Map filename to keycode
-        switch(arrow){
+        switch (arrow) {
             case "Arrow_4_U.png":
                 img.code = "KeyW";
-            break;
+                break;
             case "Arrow_1_D.png":
                 img.code = "KeyS";
-            break;
+                break;
             case "Arrow_2_L.png":
                 img.code = "KeyA";
-            break;
+                break;
             case "Arrow_3_R.png":
                 img.code = "KeyD";
-            break;
+                break;
         }
         arrowsContainer.appendChild(td);
         arrowTags.push(img);
@@ -230,7 +230,7 @@ function showArrowSequence(arrowSequence, arrowsContainer){
     return arrowTags;
 }
 
-function gameOver(){
+function gameOver() {
     //Stop the game
     gameState = "over";
 
@@ -261,12 +261,12 @@ function gameOver(){
     sfxGameOver[Math.floor(Math.random() * sfxGameOver.length)].play();
 }
 
-function stratagemListToString(html){
+function stratagemListToString(html) {
     // const TOTAL_PADDING = 50;
     let re = "";
-    for(let stratagem of completedStrategemsList){
+    for (let stratagem of completedStrategemsList) {
         let line = `${stratagem.name}: `;
-        
+
         //Put padding spaces
         // console.log(`i ${line.length}`)
         // for(let i = line.length; i < TOTAL_PADDING; i++){
@@ -275,20 +275,20 @@ function stratagemListToString(html){
         // }
 
         //Put arrows
-        for(let arrow of stratagem.sequence){
-            switch(arrow){
+        for (let arrow of stratagem.sequence) {
+            switch (arrow) {
                 case "Arrow_4_U.png":
                     line += "🡅"; //🡅🡇🡄🡆 //b
-                break;
+                    break;
                 case "Arrow_1_D.png":
                     line += "🡇";
-                break;
+                    break;
                 case "Arrow_2_L.png":
                     line += "🡄";
-                break;
+                    break;
                 case "Arrow_3_R.png":
                     line += "🡆";
-                break;
+                    break;
             }
         }
         line += html ? "<br>" : "\n";
@@ -298,7 +298,7 @@ function stratagemListToString(html){
     return re;
 }
 
-function copyShare(){
+function copyShare() {
     // Gather text and write to clipboard
     let output = `## My Stratagem Hero Online Score: ${completedStrategemsList.length}\n`
     output += stratagemListToString(false);
@@ -317,21 +317,21 @@ function copyShare(){
     }, 3000);
 }
 
-async function countDown(){
-    if(gameState == "over")
+async function countDown() {
+    if (gameState == "over")
         return;
 
-    if(timeRemaining <= 0){
+    if (timeRemaining <= 0) {
         gameOver();
         return;
     }
 
     //Calculate the true delta time since last check
-    //This should fix #2 
-    if(lastCheckedTime == undefined)
+    //This should fix #2
+    if (lastCheckedTime == undefined)
         lastCheckedTime = Date.now();
     let now = Date.now();
-    let trueDeltaT = now-lastCheckedTime;
+    let trueDeltaT = now - lastCheckedTime;
     lastCheckedTime = now;
 
     // Immediately Set timeout for next countdown step
@@ -341,35 +341,35 @@ async function countDown(){
     }, COUNTDOWN_STEP);
 
     // Apply countdown if it's not paused
-    if(gameState != "hitlag" && gameState != "initial")
+    if (gameState != "hitlag" && gameState != "initial")
         timeRemaining -= trueDeltaT;
     updateTimeBar();
 }
 
-function updateTimeBar(){
-    let bar = document.getElementById("time-remaining-bar");  
-    let width = (timeRemaining/TOTAL_TIME) * 100;
+function updateTimeBar() {
+    let bar = document.getElementById("time-remaining-bar");
+    let width = (timeRemaining / TOTAL_TIME) * 100;
     // console.log(width);
-    bar.style.width = `${width}%`;   
+    bar.style.width = `${width}%`;
 }
 
-async function sleep(ms){
+async function sleep(ms) {
     await new Promise(r => setTimeout(r, ms));
 }
 
 function userIsMobile() {
     return navigator.userAgent.match(/Android/i)
-    || navigator.userAgent.match(/webOS/i)
-    || navigator.userAgent.match(/iPhone/i)
-    || navigator.userAgent.match(/iPad/i)
-    || navigator.userAgent.match(/iPod/i)
-    || navigator.userAgent.match(/BlackBerry/i)
-    || navigator.userAgent.match(/Windows Phone/i);
+        || navigator.userAgent.match(/webOS/i)
+        || navigator.userAgent.match(/iPhone/i)
+        || navigator.userAgent.match(/iPad/i)
+        || navigator.userAgent.match(/iPod/i)
+        || navigator.userAgent.match(/BlackBerry/i)
+        || navigator.userAgent.match(/Windows Phone/i);
 }
 
 function showMobileButtons() {
     container = document.getElementById("mobile-button-container");
-    
+
     container.removeAttribute("hidden");
     container.style.visibility = "visible";
 }
